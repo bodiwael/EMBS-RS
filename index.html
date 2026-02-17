@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IEEE EMBS E-JUST SBC — Research Program Proposal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #050d1f;
+    --deep: #0a1628;
+    --panel: #0f1e35;
+    --border: #1a2e4a;
+    --blue: #0d6efd;
+    --cyan: #00c8ff;
+    --gold: #f5c842;
+    --mint: #00e5b0;
+    --red: #ff4d6d;
+    --text: #d8e4f5;
+    --muted: #6a85a3;
+    --white: #f0f7ff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ─── CURSOR ─── */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--cyan);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.12s ease, background 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,200,255,0.4);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.28s ease;
+  }
+
+  /* ─── STARS BG ─── */
+  .stars {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse at 20% 30%, #0a1f44 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, #0a1530 0%, transparent 50%),
+                var(--navy);
+    overflow: hidden;
+  }
+  .stars::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 42%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 8%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 65%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 55%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 78%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 12%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 33% 88%, rgba(0,200,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 67% 90%, rgba(245,200,66,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 48% 50%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 80%, rgba(255,255,255,0.3) 0%, transparent 100%);
+  }
+
+  /* ─── LAYOUT ─── */
+  .page { position: relative; z-index: 1; }
+
+  /* ─── HEADER / HERO ─── */
+  header {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(13,110,253,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    animation: pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+    50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+  }
+
+  .ieee-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border);
+    background: rgba(13,110,253,0.08);
+    border-radius: 40px;
+    padding: 8px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: blink 1.8s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: var(--white);
+    animation: fadeUp 0.9s 0.1s ease both;
+    max-width: 900px;
+  }
+  header h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 19px);
+    color: var(--muted);
+    max-width: 620px;
+    margin: 28px auto 48px;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+
+  .hero-stats {
+    display: flex; gap: 48px; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 1.1s 0.3s ease both;
+    margin-bottom: 56px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px; font-weight: 600;
+    color: var(--white);
+    line-height: 1;
+  }
+  .stat-num span { color: var(--cyan); }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--cyan);
+    color: var(--navy);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    padding: 14px 36px;
+    border-radius: 4px;
+    text-decoration: none;
+    animation: fadeUp 1.2s 0.4s ease both;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,200,255,0.35);
+  }
+  .hero-scroll {
+    position: absolute; bottom: 36px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted);
+    font-size: 11px; letter-spacing: 2px;
+    font-family: 'Space Mono', monospace;
+    animation: fadeIn 2s 1.5s ease both;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    animation: scrollDrop 2s ease-in-out infinite;
+  }
+  @keyframes scrollDrop {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(5,13,31,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    letter-spacing: 1.5px;
+  }
+  .nav-links {
+    display: flex; gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+
+  /* ─── SECTION COMMONS ─── */
+  section {
+    padding: 100px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 30px; height: 1px;
+    background: var(--cyan);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .section-desc {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 660px;
+    line-height: 1.8;
+    margin-bottom: 60px;
+  }
+
+  /* ─── OVERVIEW PANEL ─── */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+  .overview-cell {
+    background: var(--deep);
+    padding: 36px 40px;
+    transition: background 0.2s;
+  }
+  .overview-cell:hover { background: var(--panel); }
+  .overview-cell h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .overview-cell p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .cell-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+  }
+
+  /* ─── TIMELINE / PHASES ─── */
+  #phases { max-width: 1200px; }
+  .phases-container {
+    position: relative;
+  }
+  .phase-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .phase-tabs::-webkit-scrollbar { display: none; }
+  .phase-tab {
+    flex-shrink: 0;
+    padding: 16px 22px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    margin-bottom: -1px;
+  }
+  .phase-tab:hover { color: var(--text); }
+  .phase-tab.active {
+    color: var(--cyan);
+    border-bottom-color: var(--cyan);
+  }
+
+  .phase-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .phase-content.active { display: block; }
+
+  .phase-card {
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 50px 56px;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 60px;
+    align-items: start;
+  }
+  .phase-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 120px;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(255,255,255,0.04);
+    position: absolute;
+    top: 20px; right: 40px;
+    pointer-events: none;
+    user-select: none;
+  }
+  .phase-meta { position: relative; }
+  .phase-tag {
+    display: inline-block;
+    background: rgba(0,200,255,0.1);
+    border: 1px solid rgba(0,200,255,0.25);
+    color: var(--cyan);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .phase-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .phase-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.6;
+  }
+  .phase-body {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.85;
+  }
+  .phase-body p { margin-bottom: 16px; }
+  .phase-body p:last-child { margin-bottom: 0; }
+
+  .phase-highlights {
+    display: flex; flex-direction: column; gap: 14px;
+    margin-top: 28px;
+  }
+  .highlight {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .highlight:hover {
+    background: rgba(0,200,255,0.05);
+    border-color: rgba(0,200,255,0.2);
+  }
+  .highlight-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .highlight-dot.gold { background: var(--gold); }
+  .highlight-dot.mint { background: var(--mint); }
+  .highlight-dot.red  { background: var(--red); }
+  .highlight span {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .highlight strong { color: var(--white); }
+
+  /* ─── PARALLEL PROGRAMS ─── */
+  .parallel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 48px;
+  }
+  .parallel-card {
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .parallel-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0,200,255,0.3);
+  }
+  .parallel-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .parallel-card.webinar::before { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+  .parallel-card.workshop::before { background: linear-gradient(90deg, var(--gold), #ff9800); }
+  .card-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .parallel-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    color: var(--white);
+    margin-bottom: 14px;
+  }
+  .parallel-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .tag-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 20px;
+  }
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: 1px solid;
+    text-transform: uppercase;
+  }
+  .tag.cyan  { color: var(--cyan); border-color: rgba(0,200,255,0.3); background: rgba(0,200,255,0.07); }
+  .tag.gold  { color: var(--gold); border-color: rgba(245,200,66,0.3); background: rgba(245,200,66,0.07); }
+  .tag.mint  { color: var(--mint); border-color: rgba(0,229,176,0.3); background: rgba(0,229,176,0.07); }
+  .tag.red   { color: var(--red);  border-color: rgba(255,77,109,0.3); background: rgba(255,77,109,0.07); }
+
+  /* ─── TRACKS ─── */
+  .tracks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 48px;
+  }
+  .track-card {
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px 28px;
+    cursor: default;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .track-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,200,255,0.25);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .track-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--blue));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .track-card:hover::after { transform: scaleX(1); }
+  .track-icon { font-size: 36px; margin-bottom: 18px; }
+  .track-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .track-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  /* ─── COMPETITIONS ─── */
+  .competitions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 48px;
+  }
+  .comp-card {
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 32px;
+    display: flex; align-items: flex-start; gap: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .comp-card:hover {
+    border-color: rgba(245,200,66,0.3);
+    transform: translateX(4px);
+  }
+  .comp-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--gold);
+    opacity: 0.6;
+    line-height: 1;
+    flex-shrink: 0;
+    min-width: 48px;
+  }
+  .comp-info h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .comp-info p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ─── PROCESS FLOW ─── */
+  .flow-line {
+    display: flex; align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 40px 0;
+    scrollbar-width: none;
+  }
+  .flow-line::-webkit-scrollbar { display: none; }
+  .flow-node {
+    flex-shrink: 0;
+    text-align: center;
+    width: 130px;
+  }
+  .flow-circle {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cyan);
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+  .flow-node:hover .flow-circle {
+    background: rgba(0,200,255,0.1);
+    border-color: var(--cyan);
+    transform: scale(1.1);
+  }
+  .flow-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+  }
+  .flow-arrow {
+    flex-shrink: 0;
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, var(--border), var(--blue));
+    position: relative;
+  }
+  .flow-arrow::after {
+    content: '';
+    position: absolute; right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-left: 6px solid var(--blue);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+
+  /* ─── TEAM & ROLES ─── */
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 48px;
+  }
+  .role-card {
+    background: var(--deep);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 30px 26px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .role-card:hover {
+    border-color: rgba(0,229,176,0.3);
+    transform: translateY(-2px);
+  }
+  .role-card h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .role-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .role-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .role-badge.ieee  { background: rgba(13,110,253,0.15); color: #4da6ff; border: 1px solid rgba(13,110,253,0.3); }
+  .role-badge.ext   { background: rgba(0,229,176,0.1); color: var(--mint); border: 1px solid rgba(0,229,176,0.25); }
+  .role-badge.sbc   { background: rgba(245,200,66,0.1); color: var(--gold); border: 1px solid rgba(245,200,66,0.25); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 60px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 24px;
+    position: relative; z-index: 1;
+  }
+  .footer-left h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .footer-left p {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .footer-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--cyan);
+    border: 1px solid rgba(0,200,255,0.25);
+    padding: 8px 20px;
+    border-radius: 3px;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+    margin: 0 auto 16px;
+  }
+
+  /* ─── REVEAL ANIMATIONS ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .phase-card { grid-template-columns: 1fr; padding: 36px 28px; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .parallel-grid { grid-template-columns: 1fr; }
+    .tracks-grid { grid-template-columns: 1fr 1fr; }
+    .competitions { grid-template-columns: 1fr; }
+    .roles-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 600px) {
+    .tracks-grid { grid-template-columns: 1fr; }
+    section { padding: 70px 18px; }
+  }
+
+  /* ─── SELECTION ACCENT ─── */
+  ::selection {
+    background: rgba(0,200,255,0.25);
+    color: var(--white);
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="page">
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-logo">IEEE EMBS · E-JUST SBC</div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#phases">Phases</a></li>
+    <li><a href="#parallel">Programs</a></li>
+    <li><a href="#tracks">Tracks</a></li>
+    <li><a href="#competitions">Competitions</a></li>
+    <li><a href="#team">Roles</a></li>
+  </ul>
+</nav>
+
+<!-- ─── HERO ─── -->
+<header>
+  <div class="hero-glow"></div>
+  <div class="ieee-badge">
+    <span class="badge-dot"></span>
+    IEEE EMBS E-JUST Student Branch Chapter
+  </div>
+  <h1>The <em>Research</em><br>Program</h1>
+  <p class="hero-sub">
+    An international, multi-phase research initiative bridging biomedical engineering,
+    bioinformatics, and cutting-edge applied science — from concept to published innovation.
+  </p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">6<span>+</span></div><div class="stat-label">Program Phases</div></div>
+    <div class="stat"><div class="stat-num">5<span>+</span></div><div class="stat-label">Research Tracks</div></div>
+    <div class="stat"><div class="stat-num">4<span>+</span></div><div class="stat-label">Int'l Competitions</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Novel Ideas</div></div>
+  </div>
+  <a href="#overview" class="hero-cta">Explore the Program →</a>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+</header>
+
+<!-- ─── OVERVIEW ─── -->
+<section id="overview">
+  <div class="reveal">
+    <div class="section-label">Program Overview</div>
+    <h2 class="section-title">From Talent to<br>Published Research</h2>
+    <p class="section-desc">
+      A rigorous, end-to-end journey designed to transform ambitious applicants into independent
+      research contributors under IEEE mentorship — culminating in IEEE conference publications
+      and international competition entries.
+    </p>
+  </div>
+
+  <!-- PROCESS FLOW -->
+  <div class="reveal" style="transition-delay:0.1s">
+    <div class="flow-line">
+      <div class="flow-node">
+        <div class="flow-circle">Ⅰ</div>
+        <div class="flow-label">Announce &<br>Recruitment</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="flow-circle">Ⅱ</div>
+        <div class="flow-label">Filtration &<br>Assessment</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="flow-circle">Ⅲ</div>
+        <div class="flow-label">Intensive<br>Training</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="flow-circle">Ⅳ</div>
+        <div class="flow-label">Mentorship<br>& Research</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="flow-circle">Ⅴ</div>
+        <div class="flow-label">Implementation<br>& Results</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="flow-circle">Ⅵ</div>
+        <div class="flow-label">Paper &<br>Publication</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW GRID -->
+  <div class="overview-grid reveal" style="transition-delay:0.2s">
+    <div class="overview-cell">
+      <div class="cell-icon">🌐</div>
+      <h3>International Scope</h3>
+      <p>Organized by IEEE EMBS E-JUST SBC with mentors, speakers, and sponsors from the global biomedical research community.</p>
+    </div>
+    <div class="overview-cell">
+      <div class="cell-icon">🏆</div>
+      <h3>Publication-Driven</h3>
+      <p>Every project is designed with novelty and publishability in mind, targeting IEEE conference proceedings and international competitions.</p>
+    </div>
+    <div class="overview-cell">
+      <div class="cell-icon">🧬</div>
+      <h3>Biomedical Focus</h3>
+      <p>Centered on the intersection of biomedical engineering, bioinformatics, AI, signal processing, electronics, and computational modeling.</p>
+    </div>
+    <div class="overview-cell">
+      <div class="cell-icon">🤝</div>
+      <h3>Elite Mentorship</h3>
+      <p>Qualified applicants are matched with IEEE-recognized experts who guide weekly progress, ideation, and final project outcomes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PHASES ─── -->
+<section id="phases" style="max-width:1200px; padding-top:60px">
+  <div class="reveal">
+    <div class="section-label">Program Structure</div>
+    <h2 class="section-title">The Six Phases</h2>
+    <p class="section-desc">
+      Each phase is deliberately structured to filter, train, challenge, and finally launch
+      participants toward world-class research outcomes.
+    </p>
+  </div>
+
+  <div class="phases-container reveal" style="transition-delay:0.15s">
+    <div class="phase-tabs" id="phaseTabs">
+      <button class="phase-tab active" data-tab="p1">Phase I</button>
+      <button class="phase-tab" data-tab="p2">Phase II</button>
+      <button class="phase-tab" data-tab="p3">Phase III</button>
+      <button class="phase-tab" data-tab="p4">Phase IV</button>
+      <button class="phase-tab" data-tab="p5">Phase V</button>
+      <button class="phase-tab" data-tab="p6">Phase VI</button>
+    </div>
+
+    <!-- PHASE 1 -->
+    <div class="phase-content active" id="p1">
+      <div class="phase-card">
+        <div class="phase-meta">
+          <div class="phase-tag">Phase 01</div>
+          <div class="phase-title">Announcement &<br>Recruitment</div>
+          <div class="phase-subtitle">Program Launch · Community Building<br>Stakeholder Onboarding</div>
+        </div>
+        <div class="phase-body">
+          <p>The opening phase establishes the public presence and operational backbone of the Research Program. This is when the program goes live to the world.</p>
+          <div class="phase-highlights">
+            <div class="highlight">
+              <div class="highlight-dot"></div>
+              <span><strong>Program Announcement:</strong> Formal public launch of the Research Program across IEEE channels, academic networks, and social media platforms.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot gold"></div>
+              <span><strong>Call for Mentors:</strong> Recruitment of IEEE-affiliated and industry experts in biomedical engineering and bioinformatics research areas.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot mint"></div>
+              <span><strong>Speaker Acquisition:</strong> Identifying and confirming highly qualified speakers for the weekly webinar series running parallel throughout the program.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot red"></div>
+              <span><strong>Sponsorship Drive:</strong> Securing institutional and industry sponsors to fund labs, materials, and competition entries for qualified participants.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase-content" id="p2">
+      <div class="phase-card">
+        <div class="phase-meta">
+          <div class="phase-tag">Phase 02</div>
+          <div class="phase-title">Filtration &<br>Selection</div>
+          <div class="phase-subtitle">Applications · Assessment · Interviews<br>Enrollment Decisions</div>
+        </div>
+        <div class="phase-body">
+          <p>A rigorous, multi-layer evaluation process designed to identify the most capable and committed candidates from the applicant pool — determining their program pathway.</p>
+          <div class="phase-highlights">
+            <div class="highlight">
+              <div class="highlight-dot"></div>
+              <span><strong>Application Review:</strong> Initial screening of submitted applications based on academic background, motivation, and relevant experience.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot gold"></div>
+              <span><strong>Technical Assessment:</strong> Domain-specific evaluations testing knowledge in biomedical engineering, programming, mathematics, and research fundamentals.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot mint"></div>
+              <span><strong>Structured Interviews:</strong> One-on-one or panel interviews assessing analytical thinking, research curiosity, and ability to execute a project independently.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot red"></div>
+              <span><strong>Two Tracks Outcome:</strong> Top-qualifying applicants advance directly to Phase IV (Mentorship). All other accepted applicants proceed through the intensive training in Phase III.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase-content" id="p3">
+      <div class="phase-card">
+        <div class="phase-meta">
+          <div class="phase-tag">Phase 03</div>
+          <div class="phase-title">Intensive<br>Training Program</div>
+          <div class="phase-subtitle">3 Specialized Tracks · Dashboard Access<br>Applied Projects · Full Materials</div>
+        </div>
+        <div class="phase-body">
+          <p>An accelerated, hands-on training program covering core technologies essential to biomedical research. Participants are assigned to one of three specialized tracks via the program dashboard.</p>
+          <p>This phase is designed to bridge knowledge gaps and build practical research capabilities — ensuring all participants are fully equipped before entering the research mentorship phase.</p>
+          <div class="phase-highlights">
+            <div class="highlight">
+              <div class="highlight-dot"></div>
+              <span><strong>Track Assignment:</strong> Each applicant is assigned through the program dashboard to their best-matched track based on background and research interest.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot gold"></div>
+              <span><strong>Intensive Curriculum:</strong> Full structured materials, recorded lectures, references, and reading lists curated for biomedical research contexts.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot mint"></div>
+              <span><strong>Applied Projects:</strong> Track-specific hands-on projects to build mastery — not just theory. Participants build, test, and present real outputs.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot red"></div>
+              <span><strong>Qualified Applicants Bypass:</strong> Those who passed the Phase II top threshold skip directly to Phase IV — their training is considered complete.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase-content" id="p4">
+      <div class="phase-card">
+        <div class="phase-meta">
+          <div class="phase-tag">Phase 04</div>
+          <div class="phase-title">Mentorship &<br>Research Development</div>
+          <div class="phase-subtitle">Weekly Meetings · IEEE Mentors<br>Research Challenges · Idea Formation</div>
+        </div>
+        <div class="phase-body">
+          <p>The heart of the program. Every participant is paired with a dedicated IEEE-affiliated mentor who is a recognized expert in the specific biomedical research domain relevant to the applicant's chosen direction.</p>
+          <p>IEEE EMBS E-JUST SBC serves as the overarching support system — providing coordination, logistics, and guidance — while each mentor focuses exclusively on tracking project progress and advancing the research quality.</p>
+          <div class="phase-highlights">
+            <div class="highlight">
+              <div class="highlight-dot"></div>
+              <span><strong>Personal Mentor Assignment:</strong> Each participant is matched with a highly qualified IEEE expert based on research area alignment and availability.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot gold"></div>
+              <span><strong>Weekly Progress Meetings:</strong> Structured one-on-one sessions between participant and mentor to review work, discuss blockers, and sharpen direction.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot mint"></div>
+              <span><strong>Research Challenges:</strong> General open-ended challenges issued to participants to stimulate search for original research questions and define the project scope.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot red"></div>
+              <span><strong>SBC Parallel Support:</strong> The chapter team assists with administrative guidance, resource access, motivation, and facilitates coordination between all parties.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 5 -->
+    <div class="phase-content" id="p5">
+      <div class="phase-card">
+        <div class="phase-meta">
+          <div class="phase-tag">Phase 05</div>
+          <div class="phase-title">Implementation<br>& Results</div>
+          <div class="phase-subtitle">Simulation · Hardware · Lab Access<br>Materials Provision · Result Generation</div>
+        </div>
+        <div class="phase-body">
+          <p>Once participants have achieved sufficient research progress and their project direction has been confirmed with their mentor, they transition into full implementation mode — the hands-on execution of their research idea.</p>
+          <p>The chapter actively steps in during this phase to provide real institutional support, lab access, and the physical or computational resources required to finalize results.</p>
+          <div class="phase-highlights">
+            <div class="highlight">
+              <div class="highlight-dot"></div>
+              <span><strong>Simulation-Based Projects:</strong> For computational, AI, CV, signal processing, or bioinformatics projects, participants utilize provided software environments, datasets, and compute resources.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot gold"></div>
+              <span><strong>Hardware Implementation:</strong> For electronics, BCI, or sensor-based projects, the chapter assists in sourcing components and securing lab access at partner institutions.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot mint"></div>
+              <span><strong>Lab & Materials Support:</strong> IEEE EMBS E-JUST SBC coordinates to provide physical labs, bench equipment, and experimental materials as needed.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot red"></div>
+              <span><strong>Results Finalization:</strong> Structured process to generate, validate, and document scientific results that are ready for integration into an academic paper.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 6 -->
+    <div class="phase-content" id="p6">
+      <div class="phase-card">
+        <div class="phase-meta">
+          <div class="phase-tag">Phase 06</div>
+          <div class="phase-title">Paper Drafting<br>& Publication</div>
+          <div class="phase-subtitle">IEEE Conferences · International Competitions<br>Novel Contributions · Global Recognition</div>
+        </div>
+        <div class="phase-body">
+          <p>With finalized results in hand, participants enter the final and most rewarding phase: transforming their research into a formally structured, publication-ready academic paper. All ideas across the program must be <strong>novel and original</strong> to qualify for IEEE conference proceedings.</p>
+          <p>Projects are tracked from early phases for competition eligibility. Those in competition-aligned areas are submitted to international competitions — with the prospect of conference publication upon winning. All others are guided toward IEEE conference submissions with direct support from mentors and the chapter.</p>
+          <div class="phase-highlights">
+            <div class="highlight">
+              <div class="highlight-dot"></div>
+              <span><strong>Paper Drafting Support:</strong> Participants receive guidance on structuring, writing, and formatting IEEE-compliant academic papers from their mentor and the chapter team.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot gold"></div>
+              <span><strong>Competition Pathway:</strong> Projects tracked for competition areas are submitted to BCI Award 2026, NHID Competition, MICCAI Challenges, or International Bioinformatics Competitions — winners publish at the associated conference.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot mint"></div>
+              <span><strong>IEEE Conference Publication:</strong> Non-competition or non-winning projects are assisted by the chapter and mentors to target and submit to appropriate IEEE conference venues.</span>
+            </div>
+            <div class="highlight">
+              <div class="highlight-dot red"></div>
+              <span><strong>Novelty Requirement:</strong> Every project idea must be genuinely new and not previously published, ensuring all outputs make a real contribution to the scientific community.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── PARALLEL PROGRAMS ─── -->
+<section id="parallel">
+  <div class="reveal">
+    <div class="section-label">Running Throughout All Phases</div>
+    <h2 class="section-title">Parallel Programs</h2>
+    <p class="section-desc">
+      Two independent enrichment programs run continuously alongside all six main phases — mandatory for enrolled participants and open to the wider community.
+    </p>
+  </div>
+
+  <div class="parallel-grid reveal" style="transition-delay:0.15s">
+    <div class="parallel-card webinar">
+      <div class="card-label">Weekly · Mandatory for Enrolled · Open to All</div>
+      <h3>Research Program<br>Series</h3>
+      <p>
+        Online webinars and seminars hosted weekly under the banner of the <em>Research Program Series</em>.
+        Featuring globally recognized founders and researchers of novel biomedical technology applications,
+        drawn from multiple countries. These sessions are mandatory for all enrolled applicants
+        and simultaneously open to external attendees worldwide — amplifying the program's international reach.
+      </p>
+      <div class="tag-list">
+        <span class="tag cyan">Weekly</span>
+        <span class="tag cyan">Online</span>
+        <span class="tag cyan">Global Speakers</span>
+        <span class="tag cyan">Open Access</span>
+        <span class="tag cyan">Mandatory</span>
+      </div>
+    </div>
+
+    <div class="parallel-card workshop">
+      <div class="card-label">Monthly · Research Skills · Methodology</div>
+      <h3>Research Concepts<br>Workshops</h3>
+      <p>
+        Monthly deep-dive workshops covering the foundational methodological skills every researcher needs.
+        Topics include writing in LaTeX, formulating strong research questions, generating and presenting
+        scientific results, paper structuring, literature review methodology, and academic writing standards.
+        These workshops are designed to run in lockstep with participants' growing research maturity.
+      </p>
+      <div class="tag-list">
+        <span class="tag gold">LaTeX Writing</span>
+        <span class="tag gold">Research Questions</span>
+        <span class="tag gold">Scientific Results</span>
+        <span class="tag gold">Monthly</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TRACKS ─── -->
+<section id="tracks">
+  <div class="reveal">
+    <div class="section-label">Phase III Specializations</div>
+    <h2 class="section-title">Research Tracks</h2>
+    <p class="section-desc">
+      Five core technology tracks rooted in biomedical engineering and bioinformatics — each built around real research applications. Participants are assigned through the program dashboard.
+    </p>
+  </div>
+
+  <div class="tracks-grid reveal" style="transition-delay:0.1s">
+    <div class="track-card">
+      <div class="track-icon">🤖</div>
+      <h3>Artificial Intelligence</h3>
+      <p>Machine learning, deep learning, and neural network applications in medical diagnosis, drug discovery, and clinical decision support systems.</p>
+    </div>
+    <div class="track-card">
+      <div class="track-icon">👁️</div>
+      <h3>Computer Vision</h3>
+      <p>Medical image analysis, histopathology segmentation, tumor detection, retinal imaging, and real-time visual biomedical sensing applications.</p>
+    </div>
+    <div class="track-card">
+      <div class="track-icon">📡</div>
+      <h3>Signal Processing</h3>
+      <p>EEG, ECG, EMG, and biosignal processing for BCI systems, neural decoding, cardiac monitoring, and physiological state classification.</p>
+    </div>
+    <div class="track-card">
+      <div class="track-icon">🧪</div>
+      <h3>Modeling & Simulation</h3>
+      <p>Computational modeling of biological systems, pharmacokinetics, biomechanical simulations, and in-silico disease progression modeling.</p>
+    </div>
+    <div class="track-card">
+      <div class="track-icon">⚡</div>
+      <h3>Biomedical Electronics</h3>
+      <p>Wearable biosensors, implantable devices, low-power medical circuits, analog front-end design, and hardware-level biomedical instrumentation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMPETITIONS ─── -->
+<section id="competitions">
+  <div class="reveal">
+    <div class="section-label">Phase VI — Competition Pathways</div>
+    <h2 class="section-title">International Competitions<br>&amp; Target Venues</h2>
+    <p class="section-desc">
+      Projects are monitored from Phase I for competition alignment. Winners publish at the associated international conference. All other finalized papers are guided toward targeted IEEE conference submissions.
+    </p>
+  </div>
+
+  <div class="competitions reveal" style="transition-delay:0.1s">
+    <div class="comp-card">
+      <div class="comp-num">01</div>
+      <div class="comp-info">
+        <h4>BCI Award 2026</h4>
+        <p>International Brain-Computer Interface competition — for projects in neural decoding, BCI systems, and neurotechnology. Winners publish at the associated international BCI conference.</p>
+        <div class="tag-list" style="margin-top:14px">
+          <span class="tag cyan">BCI</span>
+          <span class="tag cyan">Neurotechnology</span>
+          <span class="tag cyan">EEG/Neural</span>
+        </div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-num">02</div>
+      <div class="comp-info">
+        <h4>NHID Competition</h4>
+        <p>Focused on novel human interface devices and assistive neurotechnology — projects addressing disability, accessibility, and human augmentation applications.</p>
+        <div class="tag-list" style="margin-top:14px">
+          <span class="tag gold">Assistive Tech</span>
+          <span class="tag gold">HID</span>
+          <span class="tag gold">Neural Interfaces</span>
+        </div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-num">03</div>
+      <div class="comp-info">
+        <h4>MICCAI Challenges</h4>
+        <p>Medical image computing and computer-assisted intervention challenges — for medical imaging AI, segmentation, surgical robotics, and computer vision in clinical applications.</p>
+        <div class="tag-list" style="margin-top:14px">
+          <span class="tag mint">Medical Imaging</span>
+          <span class="tag mint">CV + AI</span>
+          <span class="tag mint">Clinical</span>
+        </div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-num">04</div>
+      <div class="comp-info">
+        <h4>International Bioinformatics Competition</h4>
+        <p>For genomics, proteomics, computational biology, and systems biology research — aligned with global bioinformatics societies and their affiliated conferences.</p>
+        <div class="tag-list" style="margin-top:14px">
+          <span class="tag red">Bioinformatics</span>
+          <span class="tag red">Genomics</span>
+          <span class="tag red">Computational Bio</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TEAM ROLES ─── -->
+<section id="team">
+  <div class="reveal">
+    <div class="section-label">People & Structure</div>
+    <h2 class="section-title">Roles in the Program</h2>
+    <p class="section-desc">
+      Three distinct roles define the human architecture of this program — each with a clear mandate and contribution boundary.
+    </p>
+  </div>
+
+  <div class="roles-grid reveal" style="transition-delay:0.1s">
+    <div class="role-card">
+      <div class="role-badge ieee">IEEE Expert</div>
+      <h4>Research Mentors</h4>
+      <p>Highly qualified IEEE-affiliated experts assigned one-to-one with participants. They hold weekly meetings, track project progress, recommend research directions, and provide expert critique. Their role is focused, not administrative.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-badge ext">Global</div>
+      <h4>Speakers & Founders</h4>
+      <p>International innovators and founders of novel biomedical technology applications. They lead the weekly Research Program Series webinars — sharing frontier knowledge, real-world experience, and global research perspectives.</p>
+    </div>
+    <div class="role-card">
+      <div class="role-badge sbc">E-JUST SBC</div>
+      <h4>IEEE EMBS SBC Team</h4>
+      <p>The chapter team manages the entire program: recruitment, logistics, dashboard, lab coordination, materials, sponsor relations, competition submissions, and conference targeting. They serve as the central support structure for participants throughout all six phases.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-left">
+    <h2>IEEE EMBS E-JUST SBC</h2>
+    <p>Research Program — International · Multi-Phase · Publication-Oriented</p>
+  </div>
+  <div class="footer-badge">RESEARCH PROGRAM PROPOSAL</div>
+</footer>
+
+</div><!-- .page -->
+
+<script>
+  // ─── CURSOR ───
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+  });
+  function animateCursor() {
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    cursorRing.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // ─── PHASE TABS ───
+  document.querySelectorAll('.phase-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.phase-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ─── REVEAL ON SCROLL ───
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // ─── SMOOTH ANCHOR SCROLL FOR NAV ───
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
+
+</body>
+</html>
